@@ -1,4 +1,4 @@
 - name: default
   run_list:
-    - recipe[scsi::default]
+    - recipe[bus-scsi::default]
   attributes:
