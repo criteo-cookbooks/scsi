@@ -44,6 +44,7 @@ describe 'bus-scsi::default' do
     end
 
     it 'converges successfully' do
+      skip('Not supported on non-Windows machine.') if RbConfig::CONFIG['host_os'] !~ /mswin|mingw32|windows/
       expect { chef_run }.to_not raise_error
     end
   end

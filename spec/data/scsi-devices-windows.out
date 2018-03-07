@@ -1,0 +1,12 @@
+{
+  "2:0:0:0": {
+    "host": 2,
+    "channel": 0,
+    "target": 0,
+    "lun": 0,
+    "model": "Micron_1100_MTFDDAK256TBN",
+    "fwrev": "M0MU020",
+    "serial": "123456789ABC",
+    "size": 256052966400
+  }
+}
