@@ -1,5 +1,8 @@
 # bus-scsi
 
+[![Cookbook Version][cookbook_version]][cookbook]
+[![Build Status][build_status]][build_status]
+
 Expose SCSI disk information via automatic attributes under the `bus.scsi`
 namespace.
 
@@ -43,3 +46,7 @@ Attribute     | Description
 
 This cookbook has a single `bus-scsi::default` recipe which does nothing. It can
 be used to load the cookbook from a run-list.
+
+[build_status]:             https://api.travis-ci.org/criteo-cookbooks/bus-scsi.svg?branch=master
+[cookbook_version]:         https://img.shields.io/cookbook/v/bus-scsi.svg
+[cookbook]:                 https://supermarket.chef.io/cookbooks/bus-scsi
