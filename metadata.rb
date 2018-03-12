@@ -1,7 +1,7 @@
 name             'bus-scsi'
 maintainer       'SRE Core Infra team'
 maintainer_email 'sre-core-infra@criteo.com'
-license          'All rights reserved'
+license          'Apache-2.0'
 description      'Pseudo-ohai for SCSI disks'
 long_description 'Pseudo-ohai for SCSI disks'
 version          '0.1.0'
