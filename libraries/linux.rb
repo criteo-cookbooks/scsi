@@ -19,6 +19,7 @@ module SCSI
           attach_function :udev_device_unref, %i[pointer], :pointer
           attach_function :udev_device_new_from_syspath, %i[pointer string], :pointer
           attach_function :udev_device_get_parent, %i[pointer], :pointer
+          attach_function :udev_device_get_subsystem, %i[pointer], :string
           attach_function :udev_device_get_syspath, %i[pointer], :string
           attach_function :udev_device_get_sysname, %i[pointer], :string
           attach_function :udev_device_get_properties_list_entry, %i[pointer], :pointer
@@ -107,6 +108,10 @@ module SCSI
             Device.new(@udev, path)
           end
 
+          def subsystem
+            Udev::C.udev_device_get_subsystem(@dev)
+          end
+
           def syspath
             ret = Udev::C.udev_device_get_syspath(@dev)
             raise UdevException, 'udev_device_get_syspath failed' if ret.nil?
@@ -183,6 +188,13 @@ module SCSI
         parent && parent.sysname == match.sysname
       end
 
+      def self.find_first_pci_ancestor(dev)
+        parent = dev
+        while (parent = parent.parent)
+          return parent if parent.subsystem == 'pci'
+        end
+      end
+
       def self.sectors_to_bytes(nsector)
         # /sys/block/*/size returns the number of 512 bytes sectors (Linux's sector_t)
         nsector.to_i * 512 unless nsector.nil?
@@ -200,15 +212,16 @@ module SCSI
           host, channel, target, lun = sysname.split(':')
 
           result.merge!(sysname => ::Mash.new(
-            host:    host.to_i,
-            channel: channel.to_i,
-            target:  target.to_i,
-            lun:     lun.to_i,
-            model:   blkdev.properties['ID_MODEL'],
-            fwrev:   blkdev.properties['ID_REVISION'],
-            serial:  blkdev.properties['ID_SERIAL_SHORT'],
-            size:    sectors_to_bytes(blkdev.attributes['size']),
-            wwn:     blkdev.properties['ID_WWN_WITH_EXTENSION'],
+            host:     host.to_i,
+            channel:  channel.to_i,
+            target:   target.to_i,
+            lun:      lun.to_i,
+            model:    blkdev.properties['ID_MODEL'],
+            fwrev:    blkdev.properties['ID_REVISION'],
+            serial:   blkdev.properties['ID_SERIAL_SHORT'],
+            size:     sectors_to_bytes(blkdev.attributes['size']),
+            wwn:      blkdev.properties['ID_WWN_WITH_EXTENSION'],
+            host_pci: find_first_pci_ancestor(blkdev)&.sysname,
           ),)
         end
       end

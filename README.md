@@ -31,7 +31,7 @@ For each disk, the hash key is the "host:channel:target:lun" quadruplet and the
 value is another hash with the following attributes exposed:
 
 Attribute     | Description
---------------|---------------------------------------------
+--------------|------------------------------------------------------------------------
 `host`        | SCSI adapter number
 `channel`     | SCSI channel number
 `target`      | SCSI id number
@@ -41,6 +41,7 @@ Attribute     | Description
 `serial`      | Disk serial number
 `size`        | Size of the disk in bytes
 `wwn`         | World wide number identifier (only in Linux)
+`host_pci`    | PCI location of the host adapter this device depends on (only in Linux)
 
 ## Recipes
 
