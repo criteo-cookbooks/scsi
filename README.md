@@ -41,6 +41,7 @@ Attribute     | Description
 `serial`      | Disk serial number
 `size`        | Size of the disk in bytes
 `wwn`         | World wide number identifier (only in Linux)
+`devnode`     | Device entry in /dev (only in Linux)
 `host_pci`    | PCI location of the host adapter this device depends on (only in Linux)
 
 ## Recipes

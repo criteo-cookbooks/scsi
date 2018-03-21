@@ -22,6 +22,7 @@ module SCSI
           attach_function :udev_device_get_subsystem, %i[pointer], :string
           attach_function :udev_device_get_syspath, %i[pointer], :string
           attach_function :udev_device_get_sysname, %i[pointer], :string
+          attach_function :udev_device_get_devnode, %i[pointer], :string
           attach_function :udev_device_get_properties_list_entry, %i[pointer], :pointer
           attach_function :udev_device_get_property_value, %i[pointer string], :string
           attach_function :udev_device_get_sysattr_value, %i[pointer string], :string
@@ -124,6 +125,10 @@ module SCSI
             ret
           end
 
+          def devnode
+            Udev::C.udev_device_get_devnode(@dev)
+          end
+
           def properties
             Udev::Map.new { |k| Udev::C.udev_device_get_property_value(@dev, k) }
           end
@@ -221,6 +226,7 @@ module SCSI
             serial:   blkdev.properties['ID_SERIAL_SHORT'],
             size:     sectors_to_bytes(blkdev.attributes['size']),
             wwn:      blkdev.properties['ID_WWN_WITH_EXTENSION'],
+            devnode:  blkdev.devnode,
             host_pci: find_first_pci_ancestor(blkdev)&.sysname,
           ),)
         end
