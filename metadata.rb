@@ -6,8 +6,8 @@ description      'Pseudo-ohai for SCSI disks'
 long_description 'Pseudo-ohai for SCSI disks'
 version          '0.1.0'
 
-supports         'centos',  '>= 7.0'
-supports         'redhat',  '>= 7.0'
+supports         'centos',  '>= 6.0'
+supports         'redhat',  '>= 6.0'
 supports         'windows', '>= 6.3'
 
 chef_version     '>= 12.7'                                             if respond_to? :chef_version

@@ -11,7 +11,7 @@ namespace.
 This cookbook requires Chef 12.7+.
 
 ### Platforms
-* Linux with libudev-183+ (tested with CentOS 7)
+* Linux with libudev-147+ (tested with CentOS 6)
 * Windows (tested with Windows Server 2012R2 & 2016)
 
 ## Usage

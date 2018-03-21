@@ -7,7 +7,7 @@ module SCSI
         module C
           extend FFI::Library
 
-          ffi_lib ['udev', 'libudev.so.1']
+          ffi_lib ['udev', 'libudev.so.1', 'libudev.so.0']
 
           attach_function :udev_ref, %i[pointer], :pointer
           attach_function :udev_unref, %i[pointer], :pointer
@@ -17,8 +17,9 @@ module SCSI
           attach_function :udev_list_entry_get_value, %i[pointer], :string
           attach_function :udev_device_ref, %i[pointer], :pointer
           attach_function :udev_device_unref, %i[pointer], :pointer
-          attach_function :udev_device_get_udev, %i[pointer], :pointer
           attach_function :udev_device_new_from_syspath, %i[pointer string], :pointer
+          attach_function :udev_device_get_parent, %i[pointer], :pointer
+          attach_function :udev_device_get_syspath, %i[pointer], :string
           attach_function :udev_device_get_sysname, %i[pointer], :string
           attach_function :udev_device_get_properties_list_entry, %i[pointer], :pointer
           attach_function :udev_device_get_property_value, %i[pointer string], :string
@@ -28,7 +29,6 @@ module SCSI
           attach_function :udev_enumerate_new, %i[pointer], :pointer
           attach_function :udev_enumerate_add_match_subsystem, %i[pointer string], :int
           attach_function :udev_enumerate_add_match_property, %i[pointer string string], :int
-          attach_function :udev_enumerate_add_match_parent, %i[pointer pointer], :int
           attach_function :udev_enumerate_scan_devices, %i[pointer], :int
           attach_function :udev_enumerate_get_list_entry, %i[pointer], :pointer
         end
@@ -67,12 +67,6 @@ module SCSI
             self
           end
 
-          def match_parent(dev)
-            ret = Udev::C.udev_enumerate_add_match_parent(@enum, dev.instance_variable_get('@dev'))
-            raise UdevException, 'udev_enumerate_add_match_parent failed' if ret.negative?
-            self
-          end
-
           def each
             return to_enum(:each) unless block_given?
 
@@ -101,6 +95,22 @@ module SCSI
 
           def self.release(dev)
             proc { Udev::C.udev_device_unref(dev) }
+          end
+
+          def parent
+            parent = Udev::C.udev_device_get_parent(@dev)
+            return nil if parent.null?
+
+            path = Udev::C.udev_device_get_syspath(parent)
+            raise UdevException, 'udev_device_get_syspath failed' if path.nil?
+
+            Device.new(@udev, path)
+          end
+
+          def syspath
+            ret = Udev::C.udev_device_get_syspath(@dev)
+            raise UdevException, 'udev_device_get_syspath failed' if ret.nil?
+            ret
           end
 
           def sysname
@@ -168,6 +178,11 @@ module SCSI
         end
       end
 
+      def self.match_parent(dev, match)
+        parent = dev.parent
+        parent && parent.sysname == match.sysname
+      end
+
       def self.sectors_to_bytes(nsector)
         # /sys/block/*/size returns the number of 512 bytes sectors (Linux's sector_t)
         nsector.to_i * 512 unless nsector.nil?
@@ -178,7 +193,7 @@ module SCSI
         enum = udev.enumerate.match_subsystem('scsi').match_property('DEVTYPE', 'scsi_device')
 
         enum.reduce(::Mash.new) do |result, dev|
-          blkdev = udev.enumerate.match_parent(dev).match_subsystem('block').first
+          blkdev = udev.enumerate.match_subsystem('block').find { |x| match_parent(x, dev) }
           next result if blkdev.nil?
 
           sysname = dev.sysname
