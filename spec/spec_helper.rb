@@ -2,6 +2,9 @@ require 'json'
 require 'chefspec'
 require 'chefspec/berkshelf'
 
+# Disable ::SCSI.devices mock
+ENV['MOCK_BUS_SCSI_INFO'] = 'NO'
+
 # Helper to get input/output test vectors
 SPEC_DATA_DIR = ::File.join(__dir__, 'data')
 def example_data(name)
@@ -12,7 +15,4 @@ end
 
 ::RSpec.configure do |config|
   ::Chef::Log.level(config.log_level = :fatal)
-  config.before do
-    ::Chef::Config[:bus_scsi_disabled] = false
-  end
 end
