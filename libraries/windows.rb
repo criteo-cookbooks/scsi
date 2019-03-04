@@ -1,8 +1,8 @@
-require 'wmi-lite'
-
 module SCSI
   module Windows
     def self.scsi_devices
+      require 'wmi-lite'
+
       wmi = ::WmiLite::Wmi.new('root\CIMV2')
       wmi.instances_of('Win32_DiskDrive').reduce(::Mash.new) do |result, disk|
         host    = disk['scsibus']
