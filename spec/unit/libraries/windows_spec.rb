@@ -1,3 +1,4 @@
+require 'wmi-lite'
 require 'spec_helper'
 require_relative '../../../libraries/windows.rb'
 
