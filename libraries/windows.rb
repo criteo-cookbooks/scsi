@@ -18,10 +18,10 @@ module SCSI
           channel: disk['scsiport'],
           target:  disk['scsitargetid'],
           lun:     disk['scsilogicalunit'],
-          model:   disk['model'].strip,
-          fwrev:   disk['firmwarerevision'].strip,
-          serial:  disk['serialnumber'].strip,
-          size:    disk['size'].to_i,
+          model:   disk['model']&.strip,
+          fwrev:   disk['firmwarerevision']&.strip,
+          serial:  disk['serialnumber']&.strip,
+          size:    disk['size']&.to_i,
         ),)
       end
     end
