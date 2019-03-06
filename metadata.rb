@@ -4,7 +4,7 @@ maintainer_email 'sre-core-infra@criteo.com'
 license          'Apache-2.0'
 description      'Pseudo-ohai for SCSI disks'
 long_description 'Pseudo-ohai for SCSI disks'
-version          '0.1.3'
+version          '0.1.4'
 
 supports         'centos',  '>= 6.0'
 supports         'redhat',  '>= 6.0'
